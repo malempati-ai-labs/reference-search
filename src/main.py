@@ -1,5 +1,5 @@
 from fastapi import FastAPI, status
-from dtos import CreateCaseStudyDto
+from src.dtos import CreateCaseStudyDto
 import aiofiles
 
 app = FastAPI()
