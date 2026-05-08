@@ -3,5 +3,6 @@ name = "reference-search"
 version = "0.1.0"
 requires-python = ">=3.11"
 dependencies = [
+    "aiofiles>=25.1.0",
     "fastapi[standard]>=0.136.1",
 ]
