@@ -1,6 +1,7 @@
 from fastapi import FastAPI, status
 from src.dtos import CreateCaseStudiesDto
 from .rag_pipeline.inngest import initiate_rag
+from .rag_pipeline.chat import retrieve_similar_documents
 
 app = FastAPI()
 
@@ -13,3 +14,11 @@ def root():
 async def create_case_studies(dto: CreateCaseStudiesDto):
     await initiate_rag(dto)
     return {"message": "Added to knowledge base"}
+
+
+@app.get("/api/customer-references", status_code=status.HTTP_200_OK)
+async def get_customer_references(search: str):
+    results = await retrieve_similar_documents(search)
+    return {
+        'message': results
+    }

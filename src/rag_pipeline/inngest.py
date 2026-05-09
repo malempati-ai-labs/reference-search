@@ -24,9 +24,27 @@ aQdrant_client = AsyncQdrantClient(url=QDRANT_URL, check_compatibility=False)
 
 
 async def add_to_knowledge_base(dto: CreateCaseStudiesDto):
-    for caseStudy in dto.caseStudies:
-        formatted_text = f"Company Name: {caseStudy.companyName}\n\n"
+    existing_companies = set()
 
+    if os.path.exists(FILE_PATH):
+        async with aiofiles.open(FILE_PATH, mode="r", encoding="utf-8") as file:
+            content = await file.read()
+
+        sections = content.split("Company Name:")
+        for section in sections:
+            company_name = section.splitlines(
+            )[0].strip() if section.strip() else ""
+            if company_name:
+                existing_companies.add(company_name.lower())
+
+    texts_to_append = []
+    for caseStudy in dto.caseStudies:
+        company_name_lower = caseStudy.companyName.strip().lower()
+        if company_name_lower in existing_companies:
+            print(f"Skipping existing company: {caseStudy.companyName}")
+            continue
+
+        formatted_text = f"Company Name: {caseStudy.companyName}\n\n"
         formatted_text += "Challenges:\n"
         for index, challenge in enumerate(caseStudy.challenges, start=1):
             formatted_text += f"   {index}. {challenge}\n"
@@ -36,10 +54,12 @@ async def add_to_knowledge_base(dto: CreateCaseStudiesDto):
             formatted_text += f"   - {metric}\n"
 
         formatted_text += "\n\n"
+        texts_to_append.append(formatted_text)
+        existing_companies.add(company_name_lower)
 
-        # Append asynchronously
+    if texts_to_append:
         async with aiofiles.open(FILE_PATH, mode="a", encoding="utf-8") as file:
-            await file.write(formatted_text)
+            await file.write("".join(texts_to_append))
 
 
 async def create_chunks():

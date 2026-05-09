@@ -9,6 +9,7 @@ services:
       - QDRANT_URL=http://vector_db:6333
     volumes:
       - ./src:/app/src
+    command: uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
   vector_db:
     image: qdrant/qdrant
     ports:
