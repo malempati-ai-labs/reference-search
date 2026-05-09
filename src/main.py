@@ -12,4 +12,4 @@ def root():
 @app.post("/api/case-studies", status_code=status.HTTP_201_CREATED)
 async def create_case_studies(dto: CreateCaseStudiesDto):
     await initiate_rag(dto)
-    return {"companies": "added to knowledge base"}
+    return {"message": "Added to knowledge base"}
