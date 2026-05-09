@@ -49,8 +49,8 @@ async def add_to_knowledge_base(dto: CreateCaseStudiesDto):
         for index, challenge in enumerate(caseStudy.challenges, start=1):
             formatted_text += f"   {index}. {challenge}\n"
 
-        formatted_text += "\nKey Metrics:\n"
-        for metric in caseStudy.keyMetrics:
+        formatted_text += "\nOutcomes:\n"
+        for metric in caseStudy.outcomes:
             formatted_text += f"   - {metric}\n"
 
         formatted_text += "\n\n"
