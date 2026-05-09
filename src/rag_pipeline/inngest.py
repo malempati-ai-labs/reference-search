@@ -18,7 +18,7 @@ COLLECTION_NAME = 'case-studies'
 
 QDRANT_URL = os.getenv('QDRANT_URL', 'http://localhost:6333')
 
-embedding_model = OpenAIEmbeddings(model='text-embedding-3-small')
+embedding_model = OpenAIEmbeddings(model='text-embedding-3-large')
 
 aQdrant_client = AsyncQdrantClient(url=QDRANT_URL, check_compatibility=False)
 

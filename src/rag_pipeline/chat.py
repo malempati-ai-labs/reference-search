@@ -6,8 +6,7 @@ from pydantic import BaseModel
 
 async_openai_client = AsyncOpenAI()
 
-
-embedding_model = OpenAIEmbeddings(model='text-embedding-3-small')
+embedding_model = OpenAIEmbeddings(model='text-embedding-3-large')
 COLLECTION_NAME = 'case-studies'
 QDRANT_URL = os.getenv('QDRANT_URL', 'http://localhost:6333')
 RETRIEVAL_K = 5
@@ -93,11 +92,10 @@ async def search_customer_references(query: str):
             context = "\n\n".join(doc.page_content for doc in docs)
             system_prompt = SYSTEM_PROMPT.format(context=context)
             response = await async_openai_client.responses.parse(
-                model='gpt-4.1-nano', 
-                temperature=0, 
+                model='gpt-5-nano',
                 input=query,
                 instructions=system_prompt,
-                text_format=CustomerReferences
+                text_format=CustomerReferences,
             )
             return response.output_parsed if response.output_parsed is not None else []
     except Exception as e:
