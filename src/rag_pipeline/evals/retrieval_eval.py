@@ -1,4 +1,4 @@
-from .test_data import TEST_DATA
+from .test_data import RETRIEVAL_TEST_DATA
 
 from typing import List, Dict, Any
 from langchain_core.documents import Document
@@ -76,7 +76,7 @@ async def run_retrieval_evaluation():
     print("RUNNING RETRIEVAL EVALUATION")
     print("==============================\n")
 
-    for idx, item in enumerate(TEST_DATA, start=1):
+    for idx, item in enumerate(RETRIEVAL_TEST_DATA, start=1):
 
         query = item["query"]
         relevant_docs = item["relevantDocs"]

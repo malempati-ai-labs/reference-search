@@ -93,7 +93,7 @@ async def search_customer_references(query: str):
     try:
         docs = await retrieve_similar_documents(query)
         if not docs or len(docs) <= 0:
-            return []
+            return None
         else:
             context = "\n\n".join(doc.page_content for doc in docs)
             system_prompt = SYSTEM_PROMPT.format(context=context)
@@ -103,6 +103,6 @@ async def search_customer_references(query: str):
                 instructions=system_prompt,
                 text_format=CustomerReferences,
             )
-            return response.output_parsed if response.output_parsed is not None else []
+            return response.output_parsed if response.output_parsed is not None else None
     except Exception as e:
         print('Something went wrong during search_customer_references', e)

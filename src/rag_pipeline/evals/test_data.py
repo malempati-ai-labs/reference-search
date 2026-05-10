@@ -1,4 +1,4 @@
-TEST_DATA = [
+RETRIEVAL_TEST_DATA = [
     {
         "query": "We have a very large product catalog",
         "relevantDocs": [
@@ -8,7 +8,6 @@ TEST_DATA = [
             "Soennecken eG"
         ],
         "expectedPrimaryDoc": "SHOPcloud360",
-        "reason": "Best representative for large-scale catalog management and high-volume product infrastructure."
     },
     {
         "query": "We want to sell in many countries",
@@ -20,7 +19,6 @@ TEST_DATA = [
             "Xerox"
         ],
         "expectedPrimaryDoc": "Nice S.p.A.",
-        "reason": "Strongest reference for global multi-country commerce rollout and international digital scaling."
     },
     {
         "query": "Our ordering process is too manual",
@@ -30,7 +28,6 @@ TEST_DATA = [
             "TEKA Industrial SA"
         ],
         "expectedPrimaryDoc": "Environmental Solutions Group",
-        "reason": "Most explicit focus on self-service ordering automation and reducing manual order handling."
     },
     {
         "query": "We have fragmented systems across regions",
@@ -40,7 +37,6 @@ TEST_DATA = [
             "Rijk Zwaan"
         ],
         "expectedPrimaryDoc": "Quadient",
-        "reason": "Best example of multi-country system fragmentation and consolidation into unified architecture."
     },
     {
         "query": "We need better integration with ERP and CRM systems",
@@ -51,6 +47,63 @@ TEST_DATA = [
             "Würth Group"
         ],
         "expectedPrimaryDoc": "Nice S.p.A.",
-        "reason": "Strongest ERP + CRM integration case with global Microsoft ecosystem alignment."
+    }
+]
+
+
+RESPONSE_TEST_DATA = [
+    {
+        "query": "We have a very large product catalog",
+        "groundTruthRelevantCustomerReference": [
+            "SHOPcloud360",
+            "VBH Holding",
+            "Bürklin GmbH & Co. KG",
+            "Soennecken eG"
+        ],
+        "expectedPrimaryGroundTruthCustomerReference": "SHOPcloud360",
+        "prediction": []
+    },
+    {
+        "query": "We want to sell in many countries",
+        "groundTruthRelevantCustomerReference": [
+            "Nice S.p.A.",
+            "Quadient",
+            "TECHNOLIT GmbH",
+            "TEKA Industrial SA",
+            "Xerox"
+        ],
+        "expectedPrimaryGroundTruthCustomerReference": "Nice S.p.A.",
+        "prediction": []
+    },
+    {
+        "query": "Our ordering process is too manual",
+        "groundTruthRelevantCustomerReference": [
+            "Environmental Solutions Group",
+            "Lekkerland",
+            "TEKA Industrial SA"
+        ],
+        "expectedPrimaryGroundTruthCustomerReference": "Environmental Solutions Group",
+        "prediction": []
+    },
+    {
+        "query": "We have fragmented systems across regions",
+        "groundTruthRelevantCustomerReference": [
+            "Quadient",
+            "Fraisa",
+            "Rijk Zwaan"
+        ],
+        "expectedPrimaryGroundTruthCustomerReference": "Quadient",
+        "prediction": []
+    },
+    {
+        "query": "We need better integration with ERP and CRM systems",
+        "groundTruthRelevantCustomerReference": [
+            "Nice S.p.A.",
+            "Fraisa",
+            "SHOPcloud360",
+            "Würth Group"
+        ],
+        "expectedPrimaryGroundTruthCustomerReference": "Nice S.p.A.",
+        "prediction": []
     }
 ]
