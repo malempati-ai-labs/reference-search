@@ -21,6 +21,4 @@ async def ingest_case_studies(dto: CreateCaseStudiesDto):
 @app.get("/api/customer-references", status_code=status.HTTP_200_OK)
 async def get_customer_references(search: str):
     results = await search_customer_references(search)
-    return {
-        'data': results
-    }
+    return {'data': results.customerReferences if results is not None else []}
