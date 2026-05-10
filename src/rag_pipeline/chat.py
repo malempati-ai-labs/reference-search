@@ -1,17 +1,16 @@
 from langchain_openai.embeddings import OpenAIEmbeddings
 from langchain_qdrant import QdrantVectorStore
-import os
 from openai import AsyncOpenAI
 from pydantic import BaseModel
 from dotenv import load_dotenv
+from .constants import QDRANT_URL, VECTOR_STORE_COLLECTION_NAME, EMBEDDING_MODEL
 
 load_dotenv()
 
 async_openai_client = AsyncOpenAI()
 
-embedding_model = OpenAIEmbeddings(model='text-embedding-3-large')
-COLLECTION_NAME = 'case-studies'
-QDRANT_URL = os.getenv('QDRANT_URL', 'http://localhost:6333')
+embedding_model = OpenAIEmbeddings(model=EMBEDDING_MODEL)
+
 RETRIEVAL_K = 5
 
 SYSTEM_PROMPT = """
@@ -64,7 +63,7 @@ async def retrieve_similar_documents(query: str):
     try:
         print('Retrieving similar documents for user query')
         vector_store = QdrantVectorStore.from_existing_collection(
-            collection_name=COLLECTION_NAME,
+            collection_name=VECTOR_STORE_COLLECTION_NAME,
             url=QDRANT_URL,
             embedding=embedding_model
         )
