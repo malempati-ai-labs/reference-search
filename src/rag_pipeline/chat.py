@@ -3,6 +3,9 @@ from langchain_qdrant import QdrantVectorStore
 import os
 from openai import AsyncOpenAI
 from pydantic import BaseModel
+from dotenv import load_dotenv
+
+load_dotenv()
 
 async_openai_client = AsyncOpenAI()
 
@@ -66,7 +69,8 @@ async def retrieve_similar_documents(query: str):
             embedding=embedding_model
         )
 
-        retriever = vector_store.as_retriever(search_type="similarity", search_kwargs={"k": RETRIEVAL_K})
+        retriever = vector_store.as_retriever(
+            search_type="similarity", search_kwargs={"k": RETRIEVAL_K})
         results = await retriever.ainvoke(input=query)
         return results
     except Exception as e:
@@ -80,8 +84,10 @@ class CustomerReference(BaseModel):
     relevantOutcomes: list[str]
     confidenceScore: int
 
+
 class CustomerReferences(BaseModel):
     customerReferences: list[CustomerReference]
+
 
 async def search_customer_references(query: str):
     try:

@@ -108,7 +108,7 @@ async def create_embeddings(chunks: list[Document]):
         documents=chunks,
         embedding=embedding_model,
         url=QDRANT_URL,
-        collection_name=COLLECTION_NAME
+        collection_name=COLLECTION_NAME,
     )
     print('Indexing of documents is done!')
 
