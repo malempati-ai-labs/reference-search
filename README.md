@@ -21,33 +21,9 @@ The system ships with two evaluation harnesses (Recall@5, MRR, and an LLM-as-jud
 
 ## Architecture
 
-```
-                ┌──────────────────────────────────────────────────────┐
-                │                       Client                         │
-                └──────────────────────┬───────────────────────────────┘
-                                       │ HTTP
-                                       ▼
-              ┌───────────────────────────────────────────────────────┐
-              │                FastAPI app  (src/main.py)             │
-              │  GET  /root                                           │
-              │  POST /api/case-studies         ──► initiate_rag      │
-              │  GET  /api/customer-references  ──► search_references │
-              └────────────┬───────────────────────────┬──────────────┘
-                           │                           │
-                 ingestion │                           │ retrieval + generation
-                           ▼                           ▼
-            ┌─────────────────────────┐   ┌──────────────────────────────┐
-            │ inngest.py              │   │ chat.py                      │
-            │  • add_to_knowledge_base│   │  • retrieve_similar_documents│
-            │  • create_chunks        │   │  • search_customer_references│
-            │  • clean_vector_store   │   │                              │
-            │  • create_embeddings    │   │  → OpenAI gpt-5-nano         │
-            └────────┬───────────┬────┘   └──────────────┬───────────────┘
-                     │           │                       │
-                     ▼           ▼                       ▼
-        case-studies.txt    Qdrant collection  ◄────────┘
-                            "case-studies"
-```
+<img width="1202" height="765" alt="Screenshot 2026-05-10 at 15 38 39" src="https://github.com/user-attachments/assets/ed002445-70ab-4657-bf4f-b92ac31558cd" />
+
+---
 
 The Docker Compose stack runs two services:
 
