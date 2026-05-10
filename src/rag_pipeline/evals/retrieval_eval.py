@@ -3,7 +3,7 @@ from .test_data import RETRIEVAL_TEST_DATA
 from typing import List, Dict, Any
 from langchain_core.documents import Document
 import asyncio
-from src.rag_pipeline.chat import retrieve_similar_documents
+from src.rag_pipeline.search import retrieve_similar_documents
 
 
 

@@ -4,7 +4,7 @@ from openai import AsyncOpenAI
 import asyncio
 
 from .test_data import RESPONSE_TEST_DATA
-from src.rag_pipeline.chat import search_customer_references
+from src.rag_pipeline.search import search_customer_references
 
 client = AsyncOpenAI()
 

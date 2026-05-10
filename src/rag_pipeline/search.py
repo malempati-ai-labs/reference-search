@@ -1,17 +1,16 @@
 from langchain_openai.embeddings import OpenAIEmbeddings
 from langchain_qdrant import QdrantVectorStore
-import os
 from openai import AsyncOpenAI
 from pydantic import BaseModel
 from dotenv import load_dotenv
+from .constants import QDRANT_URL, VECTOR_STORE_COLLECTION_NAME, EMBEDDING_MODEL
 
 load_dotenv()
 
 async_openai_client = AsyncOpenAI()
 
-embedding_model = OpenAIEmbeddings(model='text-embedding-3-large')
-COLLECTION_NAME = 'case-studies'
-QDRANT_URL = os.getenv('QDRANT_URL', 'http://localhost:6333')
+embedding_model = OpenAIEmbeddings(model=EMBEDDING_MODEL)
+
 RETRIEVAL_K = 5
 
 SYSTEM_PROMPT = """
@@ -61,10 +60,11 @@ Case Study Data Context:
 
 
 async def retrieve_similar_documents(query: str):
+    """Retrieves similar documents from the vector store based on the query."""
     try:
         print('Retrieving similar documents for user query')
         vector_store = QdrantVectorStore.from_existing_collection(
-            collection_name=COLLECTION_NAME,
+            collection_name=VECTOR_STORE_COLLECTION_NAME,
             url=QDRANT_URL,
             embedding=embedding_model
         )
@@ -75,6 +75,7 @@ async def retrieve_similar_documents(query: str):
         return results
     except Exception as e:
         print('Something went wrong during retrieve similar documents for user query', e)
+        raise
 
 
 class CustomerReference(BaseModel):
@@ -89,20 +90,39 @@ class CustomerReferences(BaseModel):
     customerReferences: list[CustomerReference]
 
 
+def format_context(docs: list):
+    """Formats retrieved documents into a context string."""
+    try:
+        return "\n\n".join(doc.page_content for doc in docs)
+    except Exception as e:
+        print(f"Error formatting context: {e}")
+        raise
+
+
+async def call_llm_for_references(query: str, system_prompt: str):
+    """Calls the OpenAI LLM to parse and return customer references."""
+    try:
+        response = await async_openai_client.responses.parse(
+            model='gpt-5-nano',
+            input=query,
+            instructions=system_prompt,
+            text_format=CustomerReferences,
+        )
+        return response.output_parsed if response.output_parsed is not None else None
+    except Exception as e:
+        print(f"Error calling LLM for references: {e}")
+        raise
+
+
 async def search_customer_references(query: str):
+    """Searches and returns the most relevant customer references for a given query."""
     try:
         docs = await retrieve_similar_documents(query)
         if not docs or len(docs) <= 0:
             return None
-        else:
-            context = "\n\n".join(doc.page_content for doc in docs)
-            system_prompt = SYSTEM_PROMPT.format(context=context)
-            response = await async_openai_client.responses.parse(
-                model='gpt-5-nano',
-                input=query,
-                instructions=system_prompt,
-                text_format=CustomerReferences,
-            )
-            return response.output_parsed if response.output_parsed is not None else None
+        context = format_context(docs)
+        system_prompt = SYSTEM_PROMPT.format(context=context)
+        return await call_llm_for_references(query, system_prompt)
     except Exception as e:
-        print('Something went wrong during search_customer_references', e)
+        print(f"Error during search_customer_references: {e}")
+        raise

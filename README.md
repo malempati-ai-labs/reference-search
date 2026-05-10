@@ -23,16 +23,6 @@ The system ships with two evaluation harnesses (Recall@5, MRR, and an LLM-as-jud
 
 <img width="1202" height="765" alt="Screenshot 2026-05-10 at 15 38 39" src="https://github.com/user-attachments/assets/ed002445-70ab-4657-bf4f-b92ac31558cd" />
 
----
-
-The Docker Compose stack runs two services:
-
-| Service     | Image           | Port | Role                                |
-| ----------- | --------------- | ---- | ----------------------------------- |
-| `app`       | built locally   | 8000 | FastAPI application                 |
-| `vector_db` | `qdrant/qdrant` | 6333 | Vector store for embeddings         |
-
----
 
 ## Tech stack
 
@@ -60,7 +50,8 @@ The Docker Compose stack runs two services:
     ├── knowledge-base/
     │   └── case-studies.txt          # generated/appended via API (gitignored)
     └── rag_pipeline/
-        ├── chat.py                   # retrieval + generation
+        ├── constants.py              # shared config: paths, collection name, models, Qdrant URL
+        ├── search.py                 # retrieval + generation (was chat.py)
         ├── inngest.py                # ingestion pipeline
         └── evals/
             ├── retrieval_eval.py     # Recall@5, MRR
@@ -85,7 +76,7 @@ Create a `.env` file at the repo root (it is gitignored). Only the variable **ke
 | Variable         | Required | Default                  | Used by                                      |
 | ---------------- | -------- | ------------------------ | -------------------------------------------- |
 | `OPENAI_API_KEY` | yes      | —                        | `langchain-openai`, `openai.AsyncOpenAI`     |
-| `QDRANT_URL`     | no       | `http://localhost:6333`  | `chat.py`, `inngest.py` (Compose overrides to `http://vector_db:6333`) |
+| `QDRANT_URL`     | no       | `http://localhost:6333`  | `src/rag_pipeline/constants.py` (Compose overrides to `http://vector_db:6333`) |
 
 ---
 
@@ -100,41 +91,28 @@ echo 'OPENAI_API_KEY=sk-...' >> .env
 docker-compose up --build
 
 # 3. Health check
-curl http://localhost:8000/root
-# {"message":"I am running!"}
+curl http://localhost:8000/health
+# {"message":"Server is running!"}
 ```
+
+The Docker Compose stack runs two services:
+
+| Service     | Image           | Port | Role                                |
+| ----------- | --------------- | ---- | ----------------------------------- |
+| `app`       | built locally   | 8000 | FastAPI application                 |
+| `vector_db` | `qdrant/qdrant` | 6333 | Vector store for embeddings         |
 
 The app container mounts `./src` for hot reload (`--reload`), so source edits take effect without rebuilding.
 
----
-
-## Local development (without Docker)
-
-```bash
-# Install dependencies (uv recommended; pip works too)
-uv sync                       # or: pip install -e .
-
-# Run a Qdrant instance separately, e.g.:
-docker run -p 6333:6333 qdrant/qdrant
-
-# Start the API
-export OPENAI_API_KEY=sk-...
-uvicorn src.main:app --reload --port 8000
-```
-
-`QDRANT_URL` defaults to `http://localhost:6333`, which matches the standalone container above.
-
----
-
 ## API reference
 
-### `GET /root`
+### `GET /health`
 
 Health check.
 
 ```bash
-curl http://localhost:8000/root
-# → {"message": "I am running!"}
+curl http://localhost:8000/health
+# → {"message": "Server is running!"}
 ```
 
 ### `POST /api/case-studies`
@@ -164,7 +142,7 @@ Ingest one or more case studies. The handler appends new entries to `src/knowled
 **Response**: `201 Created`
 
 ```json
-{ "message": "Added to knowledge base" }
+{ "message": "The knowledge base is updated." }
 ```
 
 ```bash
@@ -183,21 +161,19 @@ Retrieve up to 3 ranked customer references for a natural-language challenge.
 | -------- | ------ | -------- | ----------------------------- |
 | `search` | string | yes      | Free-text customer challenge  |
 
-**Response** (`200 OK`) wraps a `CustomerReferences` payload:
+**Response** (`200 OK`) returns the ranked references under a `data` array:
 
 ```json
 {
-  "message": {
-    "customerReferences": [
-      {
-        "companyName": "SHOPcloud360",
-        "reason": "Operates a platform with one million products...",
-        "relevantChallenges": ["Managing a catalog of one million products"],
-        "relevantOutcomes":   ["350 online shops managed centrally"],
-        "confidenceScore": 92
-      }
-    ]
-  }
+  "data": [
+    {
+      "companyName": "SHOPcloud360",
+      "reason": "Operates a platform with one million products...",
+      "relevantChallenges": ["Managing a catalog of one million products"],
+      "relevantOutcomes":   ["350 online shops managed centrally"],
+      "confidenceScore": 92
+    }
+  ]
 }
 ```
 
@@ -205,7 +181,7 @@ Retrieve up to 3 ranked customer references for a natural-language challenge.
 curl 'http://localhost:8000/api/customer-references?search=we%20have%20a%20very%20large%20product%20catalog'
 ```
 
-If retrieval returns no documents, `message` will be `null`.
+If retrieval returns no documents, `data` will be `[]`.
 
 ---
 
@@ -245,13 +221,15 @@ Each chunk becomes one LangChain `Document` whose `page_content` is the whitespa
 | Generation model | `gpt-5-nano` (OpenAI Responses API, `responses.parse`)                 |
 | Output schema    | `CustomerReferences` (Pydantic) — list of `CustomerReference` objects  |
 
-The system prompt in `src/rag_pipeline/chat.py` requires the model to:
+The system prompt in `src/rag_pipeline/search.py` requires the model to:
 
 - Use **both** the `challenges` *and* `outcomes` fields when scoring relevance — never keyword similarity alone.
 - Consider business context, scale, and proven outcomes (large revenue, many countries, millions of products, etc.).
 - Return **1–3** references, ranked by relevance, each with a `reason`, `relevantChallenges`, `relevantOutcomes`, and a 0–100 `confidenceScore`.
 
-Each call to `POST /api/case-studies` triggers a full re-index: `clean_vector_store` deletes the existing collection, then `create_embeddings` rebuilds it from the updated text file. This is intentional — it keeps the index consistent with the knowledge base — but it means ingestion cost scales with total knowledge-base size, not the size of the new batch.
+`search_customer_references` is composed of three small steps: `retrieve_similar_documents` (Qdrant similarity search), `format_context` (concatenates retrieved docs), and `call_llm_for_references` (structured `responses.parse` call against `gpt-5-nano`).
+
+Each call to `POST /api/case-studies` triggers `initiate_rag_pipeline`, which runs `add_to_knowledge_base` → `create_chunks` → `clean_vector_store` → `create_embeddings`. The vector collection is dropped and rebuilt from the updated text file on every ingest. This is intentional — it keeps the index consistent with the knowledge base — but it means ingestion cost scales with total knowledge-base size, not the size of the new batch.
 
 ---
 
@@ -300,6 +278,6 @@ Both evaluators use the same five queries (covering catalog scale, multi-country
 ## Notes & limitations
 
 - **`case-studies.txt` is gitignored.** The knowledge base is built up at runtime via `POST /api/case-studies` and is not version-controlled. Re-deployments start from an empty file unless you persist the volume.
-- **Full re-index on every ingest.** `initiate_rag` always drops and recreates the Qdrant collection. This is simple and correct but not incremental — keep that in mind for large knowledge bases.
-- **Hard-coded constants.** `COLLECTION_NAME` and `RETRIEVAL_K` are defined in `src/rag_pipeline/chat.py` and `src/rag_pipeline/inngest.py`; change them in code if you need different defaults.
+- **Full re-index on every ingest.** `initiate_rag_pipeline` always drops and recreates the Qdrant collection. This is simple and correct but not incremental — keep that in mind for large knowledge bases.
+- **Centralized config.** `KNOWLEDGE_BASE_FILE_PATH`, `VECTOR_STORE_COLLECTION_NAME`, `EMBEDDING_MODEL`, and `QDRANT_URL` live in `src/rag_pipeline/constants.py`. `RETRIEVAL_K` is still defined locally in `src/rag_pipeline/search.py`. Change them in code if you need different defaults; only `QDRANT_URL` is env-overridable.
 - **Model availability.** `gpt-5-nano` and `gpt-5` must be enabled on your OpenAI account for generation and the LLM judge respectively.

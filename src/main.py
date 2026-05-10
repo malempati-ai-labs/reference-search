@@ -1,24 +1,24 @@
 from fastapi import FastAPI, status
 from src.dtos import CreateCaseStudiesDto
-from .rag_pipeline.inngest import initiate_rag
-from .rag_pipeline.chat import search_customer_references
+from .rag_pipeline.inngest import initiate_rag_pipeline
+from .rag_pipeline.search import search_customer_references
 
 app = FastAPI()
 
-@app.get("/root")
-def root():
-    return {"message": "I am running!"}
+@app.get("/health")
+def health():
+    return {"message": "Server is running!"}
 
 
 @app.post("/api/case-studies", status_code=status.HTTP_201_CREATED)
-async def create_case_studies(dto: CreateCaseStudiesDto):
-    await initiate_rag(dto)
-    return {"message": "Added to knowledge base"}
+async def ingest_case_studies(dto: CreateCaseStudiesDto):
+    await initiate_rag_pipeline(dto)
+    return {
+        "message": "The knowledge base is updated."
+    }
 
 
 @app.get("/api/customer-references", status_code=status.HTTP_200_OK)
 async def get_customer_references(search: str):
     results = await search_customer_references(search)
-    return {
-        'message': results
-    }
+    return {'data': results.customerReferences if results is not None else []}
