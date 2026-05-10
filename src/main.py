@@ -1,7 +1,7 @@
 from fastapi import FastAPI, status
 from src.dtos import CreateCaseStudiesDto
 from .rag_pipeline.inngest import initiate_rag_pipeline
-from .rag_pipeline.chat import search_customer_references
+from .rag_pipeline.search import search_customer_references
 
 app = FastAPI()
 
