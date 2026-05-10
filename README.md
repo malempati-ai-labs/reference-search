@@ -215,6 +215,7 @@ Each chunk becomes one LangChain `Document` whose `page_content` is the whitespa
 
 | Component        | Setting                                                                |
 | ---------------- | ---------------------------------------------------------------------- |
+| Chunking Strategy| Structured: Best results when we have control over document formatting |
 | Embedding model  | `text-embedding-3-large` (OpenAI)                                      |
 | Vector store     | Qdrant, collection `case-studies`                                      |
 | Retrieval        | similarity search, `k = 5`                                             |
@@ -248,7 +249,6 @@ python -m src.rag_pipeline.evals.retrieval_eval
 For each test case it prints:
 
 - `recall_at_k` — fraction of ground-truth relevant companies present in top-5
-- `retrieved_companies`, `relevant_companies`, `matched_companies`
 - `mrr` — `1 / rank` of the first relevant document, or 0 if none in top-5
 
 It then prints aggregate `Average Recall@5` and `Average MRR` over all queries.
