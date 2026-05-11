@@ -172,19 +172,17 @@ RESPONSE_TEST_DATA = [
             "Soennecken eG"
         ],
         "expectedPrimaryGroundTruthCustomerReference": "SHOPcloud360",
-        "prediction": []
     },
     {
         "query": "We want to sell in many countries",
         "groundTruthRelevantCustomerReference": [
-            "Nice S.p.A.",
-            "Quadient",
             "TECHNOLIT GmbH",
+            "Quadient",
+            "Xerox",
+            "Nice S.p.A.",
             "TEKA Industrial SA",
-            "Xerox"
         ],
         "expectedPrimaryGroundTruthCustomerReference": "Nice S.p.A.",
-        "prediction": []
     },
     {
         "query": "Our ordering process is too manual",
@@ -194,7 +192,6 @@ RESPONSE_TEST_DATA = [
             "TEKA Industrial SA"
         ],
         "expectedPrimaryGroundTruthCustomerReference": "Environmental Solutions Group",
-        "prediction": []
     },
     {
         "query": "We have fragmented systems across regions",
@@ -204,7 +201,6 @@ RESPONSE_TEST_DATA = [
             "Rijk Zwaan"
         ],
         "expectedPrimaryGroundTruthCustomerReference": "Quadient",
-        "prediction": []
     },
     {
         "query": "We need better integration with ERP and CRM systems",
@@ -215,6 +211,5 @@ RESPONSE_TEST_DATA = [
             "Würth Group"
         ],
         "expectedPrimaryGroundTruthCustomerReference": "Nice S.p.A.",
-        "prediction": []
     }
 ]
