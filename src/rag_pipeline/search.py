@@ -1,9 +1,9 @@
 from langchain_openai.embeddings import OpenAIEmbeddings
 from langchain_qdrant import QdrantVectorStore
 from openai import AsyncOpenAI
-from pydantic import BaseModel
 from dotenv import load_dotenv
 from .constants import QDRANT_URL, VECTOR_STORE_COLLECTION_NAME, EMBEDDING_MODEL
+from src.dtos import CustomerReferences
 
 load_dotenv()
 
@@ -76,18 +76,6 @@ async def retrieve_similar_documents(query: str):
     except Exception as e:
         print('Something went wrong during retrieve similar documents for user query', e)
         raise
-
-
-class CustomerReference(BaseModel):
-    companyName: str
-    reason: str
-    relevantChallenges: list[str]
-    relevantOutcomes: list[str]
-    confidenceScore: int
-
-
-class CustomerReferences(BaseModel):
-    customerReferences: list[CustomerReference]
 
 
 def format_context(docs: list):
