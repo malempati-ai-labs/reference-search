@@ -19,9 +19,28 @@ The system ships with two evaluation harnesses (Recall@5, MRR, and an LLM-as-jud
 
 ---
 
-## Architecture
+## Key Features
 
-<img width="1202" height="765" alt="Screenshot 2026-05-10 at 15 38 39" src="https://github.com/user-attachments/assets/ed002445-70ab-4657-bf4f-b92ac31558cd" />
+- Semantic search over enterprise customer case studies
+- Vector retrieval using Qdrant
+- GPT-powered ranking and reasoning
+- Structured JSON API responses
+- Retrieval evaluation with Recall@5 and MRR
+- LLM-as-a-judge response evaluation
+- Dockerized local development environment
+
+---
+
+## Why RAG Instead of Keyword Search?
+
+- Semantic retrieval allows the system to match customer intent even when queries use different wording than the original case studies. This improves recall and reduces dependency on exact keyword overlap.
+
+---
+
+## High Level Architecture
+
+<img width="1208" height="751" alt="Screenshot 2026-05-11 at 09 56 51" src="https://github.com/user-attachments/assets/134c636d-66c1-44e6-a907-eb4268f96061" />
+
 
 
 ## Tech stack
@@ -51,7 +70,7 @@ The system ships with two evaluation harnesses (Recall@5, MRR, and an LLM-as-jud
     │   └── case-studies.txt          # generated/appended via API (gitignored)
     └── rag_pipeline/
         ├── constants.py              # shared config: paths, collection name, models, Qdrant URL
-        ├── search.py                 # retrieval + generation (was chat.py)
+        ├── search.py                 # retrieval + generation
         ├── inngest.py                # ingestion pipeline
         └── evals/
             ├── retrieval_eval.py     # Recall@5, MRR
@@ -275,9 +294,18 @@ Both evaluators use the same five queries (covering catalog scale, multi-country
 
 ---
 
-## Notes & limitations
+## Current Limitations & Future Improvements
+
+Current Limitations:
 
 - **`case-studies.txt` is gitignored.** The knowledge base is built up at runtime via `POST /api/case-studies` and is not version-controlled. Re-deployments start from an empty file unless you persist the volume.
 - **Full re-index on every ingest.** `initiate_rag_pipeline` always drops and recreates the Qdrant collection. This is simple and correct but not incremental — keep that in mind for large knowledge bases.
 - **Centralized config.** `KNOWLEDGE_BASE_FILE_PATH`, `VECTOR_STORE_COLLECTION_NAME`, `EMBEDDING_MODEL`, and `QDRANT_URL` live in `src/rag_pipeline/constants.py`. `RETRIEVAL_K` is still defined locally in `src/rag_pipeline/search.py`. Change them in code if you need different defaults; only `QDRANT_URL` is env-overridable.
 - **Model availability.** `gpt-5-nano` and `gpt-5` must be enabled on your OpenAI account for generation and the LLM judge respectively.
+
+Future improvements:
+
+- Incremental indexing via Qdrant upserts
+- Hybrid search (keyword + semantic)
+- Automated customer-reference scraping
+- Product recommendation retrieval
