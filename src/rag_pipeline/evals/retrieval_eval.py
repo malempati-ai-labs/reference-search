@@ -79,7 +79,7 @@ async def run_retrieval_evaluation():
     for idx, item in enumerate(RETRIEVAL_TEST_DATA, start=1):
 
         query = item["query"]
-        relevant_docs = item["relevantDocs"]
+        relevant_docs = item["relevantCompanies"]
 
         print(f"\nTEST CASE #{idx}")
         print(f"Query: {query}")

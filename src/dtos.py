@@ -7,3 +7,15 @@ class CaseStudyDto(BaseModel):
 
 class CreateCaseStudiesDto(BaseModel):
     caseStudies: list[CaseStudyDto]
+
+
+class CustomerReference(BaseModel):
+    companyName: str
+    reason: str
+    relevantChallenges: list[str]
+    relevantOutcomes: list[str]
+    confidenceScore: int
+
+
+class CustomerReferences(BaseModel):
+    customerReferences: list[CustomerReference]
