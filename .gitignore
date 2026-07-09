@@ -1,4 +1,1 @@
-.venv
-__pycache__
-.env
-case-studies.txt
+.DS_Store
