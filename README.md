@@ -59,23 +59,24 @@ The system ships with two evaluation harnesses (Recall@5, MRR, and an LLM-as-jud
 
 ```
 .
-├── Dockerfile
-├── docker-compose.yml
-├── pyproject.toml
-├── uv.lock
-└── src/
-    ├── main.py                       # FastAPI entry point + routes
-    ├── dtos.py                       # Pydantic request DTOs
-    ├── knowledge-base/
-    │   └── case-studies.txt          # generated/appended via API (gitignored)
-    └── rag_pipeline/
-        ├── constants.py              # shared config: paths, collection name, models, Qdrant URL
-        ├── search.py                 # retrieval + generation
-        ├── inngest.py                # ingestion pipeline
-        └── evals/
-            ├── retrieval_eval.py     # Recall@5, MRR
-            ├── response_eval.py      # LLM-as-judge response scoring
-            └── test_data.py          # ground-truth queries + relevant docs
+├── server/
+  ├── Dockerfile
+  ├── docker-compose.yml
+  ├── pyproject.toml
+  ├── uv.lock
+  └── src/
+      ├── main.py                       # FastAPI entry point + routes
+      ├── dtos.py                       # Pydantic request DTOs
+      ├── knowledge-base/
+      │   └── case-studies.txt          # generated/appended via API (gitignored)
+      └── rag_pipeline/
+          ├── constants.py              # shared config: paths, collection name, models, Qdrant URL
+          ├── search.py                 # retrieval + generation
+          ├── inngest.py                # ingestion pipeline
+          └── evals/
+              ├── retrieval_eval.py     # Recall@5, MRR
+              ├── response_eval.py      # LLM-as-judge response scoring
+              └── test_data.py          # ground-truth queries + relevant docs
 ```
 
 ---
