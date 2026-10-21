@@ -1,20 +1,20 @@
-# Current Feature
-
-<!-- Feature Name -->
+# Current Feature: Logo Links to Homepage
 
 ## Status
 
-<!-- Not Started|In Progress|Completed -->
-
-Not Started
+In Progress
 
 ## Goals
 
-<!-- Goals & requirements -->
+- Clicking the logo in the header navigates to the home page (Search page, `/`)
+- Works from any page in the app
+- Uses client-side routing (React Router `Link`), no full page reload
 
 ## Notes
 
-<!-- Any extra notes -->
+- Spec: `context/features/logo-links-to-homepage.md`
+- User story: as a user, I want to click the logo to return to the home page, so I can get back to the start from anywhere.
+- Existing static markup: `client/src/components/header.tsx`
 
 ## History
 
