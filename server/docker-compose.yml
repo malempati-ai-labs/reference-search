@@ -14,3 +14,13 @@ services:
     image: qdrant/qdrant
     ports:
       - "6333:6333"
+  client:
+    build:
+      context: ../client
+    ports:
+      - "5173:5173"
+    volumes:
+      - ../client:/app
+      - /app/node_modules
+    depends_on:
+      - app
