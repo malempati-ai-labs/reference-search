@@ -1,6 +1,6 @@
 # Reference Search
 
-A Retrieval-Augmented Generation (RAG) pipeline that matches enterprise customer challenges to the most relevant Intershop customer case studies, returning ranked references with reasoning, supporting evidence, and confidence scores.
+A Retrieval-Augmented Generation (RAG) pipeline that matches enterprise customer challenges to the most relevant customer case studies, returning ranked references with reasoning, supporting evidence, and confidence scores.
 
 ---
 
