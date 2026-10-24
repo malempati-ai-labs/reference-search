@@ -10,7 +10,7 @@ Read the following to get the full context of the project:
 
 - @context/project-overview.md
 - @context/frontend-coding-standards.md
-- @context/ai-interaction.md
+- @context/ai-interactions.md
 - @context/current-feature.md
 
 
