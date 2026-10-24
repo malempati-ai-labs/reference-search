@@ -1,9 +1,17 @@
 from fastapi import FastAPI, status
+from fastapi.middleware.cors import CORSMiddleware
 from src.dtos import CreateCaseStudiesDto
 from .rag_pipeline.inngest import initiate_rag_pipeline
 from .rag_pipeline.search import search_customer_references
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/health")
 def health():

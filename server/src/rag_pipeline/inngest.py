@@ -79,6 +79,7 @@ async def append_to_file(texts: list[str]):
     """Appends a list of formatted texts to the knowledge base file."""
     try:
         if texts:
+            os.makedirs(os.path.dirname(KNOWLEDGE_BASE_FILE_PATH), exist_ok=True)
             async with aiofiles.open(KNOWLEDGE_BASE_FILE_PATH, mode="a", encoding="utf-8") as file:
                 await file.write("".join(texts))
     except Exception as e:
