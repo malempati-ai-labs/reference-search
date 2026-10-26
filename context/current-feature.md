@@ -1,4 +1,4 @@
-# Current Feature: Search Page Results
+# Current Feature
 
 <!-- Feature Name -->
 
@@ -6,39 +6,15 @@
 
 <!-- Not Started|In Progress|Completed -->
 
-In Progress
+Not Started
 
 ## Goals
 
 <!-- Goals & requirements -->
 
-- Search page displays search results components
-- Results components are built with dummy data
-- Components look exactly like the design reference and are responsive
-- Follow the `client` project structure under `src`
-- No API integration logic
-
 ## Notes
 
 <!-- Any extra notes -->
-
-- Spec: `context/features/search-page-results.md`
-- Design reference: `context/designs/search-page-with-results.png`
-- Dummy data should match the API response shape (`data` array of `CustomerReference`):
-
-```json
-{
-  "data": [
-    {
-      "companyName": "SHOPcloud360",
-      "reason": "Operates a platform with one million products...",
-      "relevantChallenges": ["Managing a catalog of one million products"],
-      "relevantOutcomes": ["350 online shops managed centrally"],
-      "confidenceScore": 92
-    }
-  ]
-}
-```
 
 ## History
 
@@ -49,3 +25,4 @@ In Progress
 - Implemented Add Case Study Interactivity: dynamic add/remove of challenges, outcomes, and company sections; react-hook-form validation; submit logs `CreateCaseStudiesDto`-shaped payload to console; pushed on `feature/add-case-study-interactivity`
 - Implemented Logo Links to Homepage: header logo/title is now a React Router `Link` to `/` with hover and focus-visible styles
 - Implemented Create Case Study: layered page → `AddCaseStudy` feature component → `useCreateCaseStudies` mutation hook → `createCaseStudies()` fetch API; validation, loading/success/error states; server CORS middleware and auto-created knowledge-base directory
+- Implemented Search Page Results: `search-results` feature with `SearchResults` list and `ReferenceCard` (rank, confidence tier badge and bar, reason, challenges/outcomes panels) rendered on the Search page from dummy data; responsive, no API integration
