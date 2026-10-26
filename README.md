@@ -382,6 +382,31 @@ Every feature or fix follows the same loop, driven by the custom `/feature` slas
 6. **`/feature explain`** — document what changed and why (optional).
 7. **`/feature complete`** — commit with a conventional message, merge to `master`, delete the branch, reset `current-feature.md` with a History entry, and push.
 
+<div align="center">
+
+```mermaid
+flowchart TD
+  A["Spec<br/>context/features/name.md"]:::spec --> B["/feature load"]:::step
+  B --> C["/feature start<br/>create branch"]:::step
+  C --> D["Implement"]:::work
+  D --> E{"Build + lint<br/>pass?"}:::check
+  E -.->|"no: fix"| D
+  E ==>|yes| F{"/feature review<br/>ready?"}:::check
+  F -.->|"needs changes"| D
+  F ==>|yes| G["/feature complete<br/>commit, merge, push"]:::done
+
+  linkStyle 4,6 stroke:#ef4444,stroke-width:2px,stroke-dasharray:5 4,color:#b91c1c
+  linkStyle 3,5,7 stroke:#22c55e,stroke-width:3px
+
+  classDef spec fill:#fef3c7,stroke:#f59e0b,color:#78350f
+  classDef step fill:#dbeafe,stroke:#3b82f6,color:#1e3a8a
+  classDef work fill:#e0e7ff,stroke:#6366f1,color:#312e81
+  classDef check fill:#fce7f3,stroke:#ec4899,color:#831843
+  classDef done fill:#dcfce7,stroke:#22c55e,color:#14532d
+```
+
+</div>
+
 ### Review agent
 
 `.claude/agents/client-code-scanner.md` is a read-only review subagent that checks frontend diffs against `context/frontend-coding-standards.md` (naming, imports, TypeScript, accessibility). It is meant to run after frontend changes and before committing.
