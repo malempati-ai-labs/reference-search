@@ -1,4 +1,4 @@
-# Current Feature
+# Current Feature: Search Page Results
 
 <!-- Feature Name -->
 
@@ -6,15 +6,39 @@
 
 <!-- Not Started|In Progress|Completed -->
 
-Not Started
+In Progress
 
 ## Goals
 
 <!-- Goals & requirements -->
 
+- Search page displays search results components
+- Results components are built with dummy data
+- Components look exactly like the design reference and are responsive
+- Follow the `client` project structure under `src`
+- No API integration logic
+
 ## Notes
 
 <!-- Any extra notes -->
+
+- Spec: `context/features/search-page-results.md`
+- Design reference: `context/designs/search-page-with-results.png`
+- Dummy data should match the API response shape (`data` array of `CustomerReference`):
+
+```json
+{
+  "data": [
+    {
+      "companyName": "SHOPcloud360",
+      "reason": "Operates a platform with one million products...",
+      "relevantChallenges": ["Managing a catalog of one million products"],
+      "relevantOutcomes": ["350 online shops managed centrally"],
+      "confidenceScore": 92
+    }
+  ]
+}
+```
 
 ## History
 
